@@ -1,0 +1,36 @@
+[project]
+name = "pyclara"
+requires-python = ">=3.9"
+dynamic = ["version"]
+readme = "README.md"
+description = "Data analysis tools and notebooks for the HALHF experiment at CLARA"
+#licence = {file = "LICENCE.txt"}
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX",
+    "Operating System :: Unix",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Topic :: Software Development"
+    ]
+authors = [
+  {name = "Lewis Boulton", email = "lewis.boulton@desy.de"}
+]
+maintainers = [
+  {name = "Lewis Boulton", email = "lewis.boulton@desy.de"}
+]
+dependencies = [
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "sphinx", "sphinx-rtd-theme"]
+
+[build-system]
+requires = ["setuptools","setuptools_scm"]
+build-backend = "setuptools.build_meta"
