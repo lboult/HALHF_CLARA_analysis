@@ -17,14 +17,18 @@ class CLARADataset:
         self.data_list = list(self.file['Settings/Data Collection List'].keys())
         
 
-    def load_images_for_step(self , camera , step_no = 0):
+    def load_images_for_step(self , camera , step_no = 0 , use_full_images = False):
 
         im_file_names = self.file['Dataset']['step_' + f'{step_no}'.zfill(3)][camera][()]
         if im_file_names.decode('utf-8') == 'FAIL':
             return [np.nan]
         
         else:
-            im_file = h5py.File(self.image_dir + im_file_names.decode('utf-8') + '_mask.hdf', 'r')
+            if use_full_images:
+                im_file = h5py.File(self.image_dir + im_file_names.decode('utf-8') + '_full.hdf', 'r')
+            else:
+                im_file = h5py.File(self.image_dir + im_file_names.decode('utf-8') + '_mask.hdf', 'r')
+ 
             ims = [im_file[key][()] for key in im_file.keys()]
 
             return ims
@@ -38,8 +42,11 @@ class CLARADataset:
         scope_data = scope_file[channel]['Segments'][()]
 
         return list(scope_data)
+    
+    def load_scalars_for_step(self , scalar , step_no = 0):
+        return self.file['Dataset/step_' + f'{step_no}'.zfill(3) + f'/{scalar}'][()]
 
-    def load_data_for_step(self , cameras = [] , scopes = [] , step_no = 0):
+    def load_data_for_step(self , cameras = [] , scopes = [] , scalars = [] , step_no = 0):
         
         data = pd.DataFrame()
 
@@ -53,6 +60,11 @@ class CLARADataset:
             scope_data = self.load_scopes_for_step(scope , step_no=step_no)
             data[scope] = scope_data
 
+        # load scalars
+        for scalar in scalars:
+            scalar_data = self.load_scalars_for_step(scalar , step_no=step_no)
+            data[scalar] = scalar_data
+
         step_values = []
         for scan_parameter in self.scan_parameters:
             step_values.append(self.file['Dataset/' + 'step_' + f'{step_no}'.zfill(3) + f'/Scan Parameters/{scan_parameter}'][()])
@@ -62,11 +74,11 @@ class CLARADataset:
 
         return data
     
-    def load_data(self , cameras = [] , scopes = []):
+    def load_data(self , cameras = [] , scopes = [] , scalars = []):
 
         datas = []
         for step_no in range(len(self.file['Dataset'].keys())):
-            datas.append(self.load_data_for_step(cameras , scopes , step_no))
+            datas.append(self.load_data_for_step(cameras , scopes , scalars , step_no))
 
         datas = pd.concat(datas)
         datas = datas.reset_index(drop=True)
