@@ -14,6 +14,7 @@ class CLARADataset:
 
         self.scan_parameters = list(self.file['Settings/Scan Parameters'].keys())
         self.snapshot_data_list = list(self.file['Settings/Snapshot Datalist'].keys())
+        self.data_list = list(self.file['Settings/Data Collection List'].keys())
         
 
     def load_images_for_step(self , camera , step_no = 0):
