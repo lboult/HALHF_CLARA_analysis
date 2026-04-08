@@ -13,8 +13,10 @@ class CLARADataset:
         self.scope_dir = scope_dir
 
         self.scan_parameters = list(self.file['Settings/Scan Parameters'].keys())
+        self.snapshot_data_list = list(self.file['Settings/Snapshot Datalist'].keys())
+        
 
-    def load_images_for_step(self , camera , step_no = 0 , ):
+    def load_images_for_step(self , camera , step_no = 0):
 
         im_file_names = self.file['Dataset']['step_' + f'{step_no}'.zfill(3)][camera][()]
         if im_file_names.decode('utf-8') == 'FAIL':
@@ -68,3 +70,20 @@ class CLARADataset:
         datas = pd.concat(datas)
         datas = datas.reset_index(drop=True)
         return datas
+    
+    def load_snapshot_data(self , where = 'START'):
+        snapshot_data = {}
+        for name in self.snapshot_data_list:
+            if 'QUAD' in name:
+                snapshot_data[name + '_READI'] = [self.file[f'Snapshots/{where}/{name}'][name]['READI'][()]]
+            else:
+                snapshot_data[name] = [self.file[f'Snapshots/{where}/{name}'][()]]
+
+        return pd.DataFrame(snapshot_data)
+    
+    def load_snapshot_data_all_steps(self):
+        snapshot_data = []
+        for step_no in range(len(self.file['Dataset'].keys())):
+            snapshot_data.append(self.load_snapshot_data('STEP_' + f'{step_no}'.zfill(3)))
+
+        return pd.concat(snapshot_data)
