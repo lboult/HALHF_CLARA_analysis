@@ -143,7 +143,8 @@ def plot_grouped_spectra_waterfall(
     E0 = 250,
     x0 = 50,
     ESPEC_px2mm = 0.0453, #mm/px
-    ESPEC_Dx = 752 #mm
+    ESPEC_Dx = 752, #mm,
+    E_offset = 0,
 ) -> Tuple[Figure, Axes]:
     """
     Plots a grouped waterfall plot.
@@ -172,7 +173,7 @@ def plot_grouped_spectra_waterfall(
     """
 
     # Prepare the DataFrame from traces and group values
-    traces = [xr.DataArray(trace , coords = {coord_name : E0 * (1 - (np.arange(0 , len(trace)) * ESPEC_px2mm-x0) / ESPEC_Dx)}) for trace in traces]
+    traces = [xr.DataArray(trace , coords = {coord_name : E0 * (1 - (np.arange(0 , len(trace)) * ESPEC_px2mm-x0) / ESPEC_Dx) - E_offset}) for trace in traces]
     df = pd.DataFrame({'traces': traces, 'group_values': group_values})
 
     # Create plot and axis if not provided
